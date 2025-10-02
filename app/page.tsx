@@ -275,8 +275,9 @@ function DeviceConnect() {
       dev.addEventListener("gattserverdisconnected", () => {
         setError("기기 연결이 해제되었습니다.");
       });
-    } catch (e: any) {
-      setError(e?.message ?? "연결에 실패했습니다.");
+    } catch (e: unknown) {
+      const message = typeof e === 'object' && e && 'message' in e ? String((e as { message: unknown }).message) : '연결에 실패했습니다.';
+      setError(message);
     }
   };
 
