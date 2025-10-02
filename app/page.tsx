@@ -240,8 +240,10 @@ export default function Home() {
 
 function DeviceConnect() {
   const [device, setDevice] = useState<BluetoothDevice | null>(null);
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [battery, setBattery] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [mockConnected, setMockConnected] = useState<boolean>(false);
 
   const connect = async () => {
     setError(null);
@@ -255,6 +257,7 @@ function DeviceConnect() {
         optionalServices: [0x180F]
       });
       setDevice(dev);
+      setDisplayName(dev.name ?? "알 수 없음");
       const server = await dev.gatt!.connect();
       const service = await server.getPrimaryService(0x180F);
       const characteristic = await service.getCharacteristic(0x2A19); // Battery Level
@@ -274,6 +277,7 @@ function DeviceConnect() {
 
       dev.addEventListener("gattserverdisconnected", () => {
         setError("기기 연결이 해제되었습니다.");
+        setDisplayName(null);
       });
     } catch (e: unknown) {
       const message = typeof e === 'object' && e && 'message' in e ? String((e as { message: unknown }).message) : '연결에 실패했습니다.';
@@ -285,28 +289,41 @@ function DeviceConnect() {
     try {
       device?.gatt?.disconnect();
       setDevice(null);
+      setDisplayName(null);
       setBattery(null);
+      setMockConnected(false);
     } catch {}
+  };
+
+  const mockConnect = () => {
+    // 실기기 없이 테스트용 표시
+    setError(null);
+    setMockConnected(true);
+    setDisplayName("SafetyTracker-DevKit");
+    setBattery(87);
   };
 
   return (
     <div className="card stack">
       <h2>기기 연결</h2>
       <div className="row">
-        {device ? (
+        {(device || mockConnected) ? (
           <button className="btn outline" onClick={disconnect}>연결 해제</button>
         ) : (
-          <button className="btn" onClick={connect}>기기 연결</button>
+          <>
+            <button className="btn" onClick={connect}>기기 연결</button>
+            <button className="btn outline" onClick={mockConnect}>테스트 연결</button>
+          </>
         )}
       </div>
       {error && <div className="muted">{error}</div>}
-      {device && (
+      {(device || mockConnected) && (
         <div className="stack">
-          <div>기기명: <strong>{device.name ?? "알 수 없음"}</strong></div>
+          <div>기기명: <strong>{displayName ?? "알 수 없음"}</strong> {mockConnected && <span className="muted">(모의)</span>}</div>
           <div>배터리: {battery!==null ? `${battery}%` : "읽는 중..."}</div>
         </div>
       )}
-      {!device && (
+      {!(device || mockConnected) && (
         <div className="muted">버튼을 눌러 블루투스 기기(배터리 서비스)를 선택하세요.</div>
       )}
     </div>
