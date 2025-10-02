@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 type Contact = { id: string; name: string; phone: string };
 
@@ -163,14 +162,7 @@ function LocationMonitor() {
   );
 }
 
-function useQueryParam(name: string) {
-  const [value, setValue] = useState<string | null>(null);
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    setValue(url.searchParams.get(name));
-  }, [name]);
-  return value;
-}
+// URL 트리거 제거됨
 
 function CountdownModal({ open, seconds, onCancel, onConfirm }: { open: boolean; seconds: number; onCancel: ()=>void; onConfirm: ()=>void }) {
   const [left, setLeft] = useState(seconds);
@@ -185,11 +177,10 @@ function CountdownModal({ open, seconds, onCancel, onConfirm }: { open: boolean;
   return (
     <div className="modal-backdrop">
       <div className="modal stack">
-        <h3>긴급신고 전송 예정</h3>
-        <p className="muted">{left}초 후 자동 전송됩니다. 취소하려면 아래 버튼을 누르세요.</p>
+        <h3>긴급신고 진행중</h3>
+        <p className="muted">{left}초 후 신고가 자동 완료됩니다. 신고를 취소하려면 아래 버튼을 누르세요.</p>
         <div className="row">
-          <button className="btn warn" onClick={onConfirm}>지금 즉시 전송</button>
-          <button className="btn outline" onClick={onCancel}>취소</button>
+          <button className="btn warn" onClick={onCancel}>신고 취소</button>
         </div>
       </div>
     </div>
@@ -197,11 +188,10 @@ function CountdownModal({ open, seconds, onCancel, onConfirm }: { open: boolean;
 }
 
 export default function Home() {
-  const trigger = useQueryParam("trigger");
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<'contacts'|'location'|'device'>("contacts");
-  useEffect(() => { if (trigger === "alert") setOpen(true); }, [trigger]);
-  const confirm = () => { setOpen(false); alert("긴급신고가 전송되었습니다. (연동 API 연결 필요)"); };
+  const confirm = () => { setOpen(false); alert("신고가 완료되었습니다."); };
+  const cancelReport = () => { setOpen(false); alert("신고가 취소되었습니다."); };
   return (
     <div className="container stack">
       <header className="row" style={{alignItems:'center', justifyContent:'space-between'}}>
@@ -220,8 +210,7 @@ export default function Home() {
       {tab==='location' && (
         <div className="stack">
           <div className="row" style={{justifyContent:'flex-end'}}>
-            <button className="btn secondary" onClick={()=>setOpen(true)}>카운트다운 시작</button>
-            <Link className="btn outline" href="/?trigger=alert">URL 트리거</Link>
+            <button className="btn secondary" onClick={()=>setOpen(true)}>긴급신고 취소</button>
           </div>
           <div className="row">
             <div className="col"><LocationMonitor /></div>
@@ -233,7 +222,7 @@ export default function Home() {
           <div className="col"><DeviceConnect /></div>
         </div>
       )}
-      <CountdownModal open={open} seconds={20} onCancel={()=>setOpen(false)} onConfirm={confirm} />
+      <CountdownModal open={open} seconds={20} onCancel={cancelReport} onConfirm={confirm} />
     </div>
   );
 }
