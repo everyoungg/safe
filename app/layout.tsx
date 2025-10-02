@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Safety Tracker",
-  description: "Emergency contacts, location monitor, and countdown trigger",
+  title: "Safe Link",
+  description: "Emergency contacts, location monitor, device link, and countdown",
 };
 
 export default function RootLayout({

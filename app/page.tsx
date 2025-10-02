@@ -205,7 +205,7 @@ export default function Home() {
   return (
     <div className="container stack">
       <header className="row" style={{alignItems:'center', justifyContent:'space-between'}}>
-        <h1>Safety Tracker</h1>
+        <h1>Safe Link</h1>
         <nav className="tabs">
           <button className={`tab ${tab==='contacts'?'active':''}`} onClick={()=>setTab('contacts')}>연락처</button>
           <button className={`tab ${tab==='location'?'active':''}`} onClick={()=>setTab('location')}>위치</button>

@@ -1,4 +1,4 @@
-Safety Tracker - 위치 모니터링 & 긴급 연락처 & 카운트다운
+Safe Link - 위치 모니터링 & 긴급 연락처 & 기기연결 & 카운트다운
 
 기능
 - 긴급 연락처 등록/삭제 (localStorage 저장)
